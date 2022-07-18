@@ -28,7 +28,7 @@ export default function SignUpResult() {
         sx={{ width: '100%' }}
         onClick={() => navigate('/teams')}
       >
-        Отменить
+        Назад
       </Button>
     </Stack>
   );

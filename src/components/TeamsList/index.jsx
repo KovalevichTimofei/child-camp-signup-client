@@ -5,6 +5,22 @@ import { getTeams, dropChildren } from '../../services';
 import Context from '../../context';
 import ChildrenList from '../ChildrenList';
 
+function displayResult(currentTeams) {
+  let totalCount = 0;
+  currentTeams.forEach((team) => {
+    totalCount += team.members.length;
+    console.log(`Отряд ${team.number}: ${team.title}`);
+    console.log('\n');
+    team.members.forEach((member, i) => {
+      const { age, firstName, surName } = member;
+      console.log(`${i + 1}. ${firstName} ${surName} (${age})`);
+    });
+    console.log('\n');
+  });
+  console.log('-------------------------------------');
+  console.log(`Всего: ${totalCount}`);
+}
+
 export default function TeamsList() {
   const navigate = useNavigate();
   const [context = {}, setContext] = useContext(Context);
@@ -16,7 +32,7 @@ export default function TeamsList() {
       const result = await getTeams(signUpId);
       setCurrentTeams(result);
       const { signUpId: newId } = result[0];
-      setContext({ ...context, teams: currentTeams, signUpId: newId });
+      setContext({ ...context, teams: result, signUpId: newId });
     } else {
       setCurrentTeams(teams);
     }
@@ -41,6 +57,14 @@ export default function TeamsList() {
           padding: '10px',
         }}
       >
+        <Button
+          variant="contained"
+          size="large"
+          onClick={() => displayResult(currentTeams)}
+          sx={{ marginRight: '20px' }}
+        >
+          Высветить результат для копирования
+        </Button>
         <Button
           variant="contained"
           size="large"

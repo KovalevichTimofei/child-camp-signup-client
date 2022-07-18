@@ -10,17 +10,24 @@ import {
   FormLabel,
   FormControlLabel,
   Radio,
+  Checkbox,
+  InputLabel,
+  Select,
+  MenuItem,
 } from '@mui/material';
-import { addChild } from '../../services';
+import { addChild, addChildToTeam } from '../../services';
 import Context from '../../context';
 
 export default function SignUpChild() {
+  const [context = {}, setContext] = useContext(Context);
+  const { teams = [] } = context;
   const [firstName, changeFirstname] = useState();
   const [surName, changeSurname] = useState();
   const [age, changeAge] = useState();
   const [gender, changeGender] = useState('female');
+  const [isTeamAvailable, setTeamAvailable] = useState(false);
+  const [team, setTeam] = useState(teams[0].id);
   const navigate = useNavigate();
-  const [context = {}, setContext] = useContext(Context);
 
   const onSave = useCallback(async () => {
     const signUpResult = await addChild({
@@ -34,6 +41,30 @@ export default function SignUpChild() {
     setContext({ ...context, signUpResult });
     navigate('/child-added');
   }, [firstName, surName, age, gender, context]);
+
+  const onSaveToTeam = useCallback(async () => {
+    const teamTitle = teams.find((el) => el.id === team).title;
+    setContext({ ...context, signUpResult: teamTitle });
+    const signUpResult = await addChildToTeam({
+      firstName,
+      surName,
+      age,
+      gender,
+      signUpId: +localStorage.getItem('signUpId'),
+      teamId: team,
+      teamTitle,
+    });
+    localStorage.setItem('signUpResult', signUpResult);
+    navigate('/child-added');
+  }, [firstName, surName, age, gender, context, team]);
+
+  const onSubmit = useCallback(() => {
+    if (isTeamAvailable) {
+      onSaveToTeam();
+    } else {
+      onSave();
+    }
+  }, [isTeamAvailable, onSave, onSaveToTeam]);
 
   return (
     <Stack
@@ -90,11 +121,38 @@ export default function SignUpChild() {
           <FormControlLabel value="male" control={<Radio />} label="Мужской" />
         </RadioGroup>
       </FormControl>
+      <FormControlLabel
+        control={
+          <Checkbox
+            value={isTeamAvailable}
+            onInput={(val) => setTeamAvailable(val.target.checked)}
+          />
+        }
+        label="Выбрать отряд вручную"
+      />
+      {isTeamAvailable ? (
+        <FormControl fullWidth>
+          <InputLabel id="demo-simple-select-label">Отряд</InputLabel>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={team}
+            label="Team"
+            onChange={(el) => setTeam(el.target.value)}
+          >
+            {teams.map((el) => (
+              <MenuItem key={el.id} value={el.id}>
+                {el.title}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      ) : null}
       <Button
         variant="contained"
         size="large"
         sx={{ width: '100%' }}
-        onClick={onSave}
+        onClick={onSubmit}
       >
         Сохранить
       </Button>

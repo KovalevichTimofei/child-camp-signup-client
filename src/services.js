@@ -34,6 +34,14 @@ export async function addChild(data) {
   return requestWrapper('post', `${BASE_API_URL}addchild`, { data });
 }
 
+export async function addChildToTeam(data) {
+  return requestWrapper('post', `${BASE_API_URL}addchildtoteam`, { data });
+}
+
 export async function dropChildren() {
   return requestWrapper('post', `${BASE_API_URL}dropchildren`);
+}
+
+export async function deleteChild(id) {
+  return requestWrapper('post', `${BASE_API_URL}removechild`, { id });
 }

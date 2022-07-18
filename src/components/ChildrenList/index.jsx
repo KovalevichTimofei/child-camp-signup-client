@@ -8,8 +8,10 @@ import {
   TableHead,
   TableRow,
   Paper,
+  IconButton,
 } from '@mui/material';
-import { Man, Woman } from '@mui/icons-material';
+import { Man, Woman, Delete } from '@mui/icons-material';
+import { deleteChild } from '../../services';
 
 function ChildrenList({ members }) {
   return (
@@ -22,6 +24,7 @@ function ChildrenList({ members }) {
             <TableCell align="right">Фамилия</TableCell>
             <TableCell align="right">Пол</TableCell>
             <TableCell align="right">Возраст</TableCell>
+            <TableCell />
           </TableRow>
         </TableHead>
         <TableBody>
@@ -39,6 +42,14 @@ function ChildrenList({ members }) {
                 {child.gender === 'male' ? <Man /> : <Woman />}
               </TableCell>
               <TableCell align="right">{child.age}</TableCell>
+              <TableCell align="center">
+                <IconButton
+                  aria-label="delete"
+                  onClick={() => deleteChild(child.id)}
+                >
+                  <Delete />
+                </IconButton>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
